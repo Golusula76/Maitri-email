@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
@@ -6,7 +7,10 @@ import datetime
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email"
+
+# Use environment variable for database URL in production
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', "mysql+pymysql://root:root@localhost:3306/new_email")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Define SQLAlchemy model
@@ -23,7 +27,7 @@ class Question1(db.Model):
 # Middleware for logging requests
 @app.before_request
 def log_request_info():
-    print(f"{datetime.datetime.now()} - {request.method} {request.url}")
+    app.logger.info(f"{datetime.datetime.now()} - {request.method} {request.url}")
 
 # Middleware for adding a custom response header
 @app.after_request
@@ -70,6 +74,6 @@ def submit_answer():
 
     return render_template('submit.html')
 
-# Run the Flask application
-if __name__ == '__main__':
-    app.run(debug=True)
+# Remove this for production deployment
+# if __name__ == '__main__':
+#     app.run(debug=True)
