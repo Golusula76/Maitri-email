@@ -1,19 +1,12 @@
-from flask import Flask, jsonify, request, abort
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
-from flask import Flask, jsonify, request, render_template, abort
+from flask import Flask, jsonify, request, abort, render_template
 from flask_sqlalchemy import SQLAlchemy
 import pymysql
+import datetime
+
 pymysql.install_as_MySQLdb()
 
 app = Flask(__name__)
-# MYSQL_HOST = 'localhost'
-# MYSQL_USER = 'root'
-# MYSQL_PASSWORD = 'root'
-# MYSQL_DB = 'new_email'
-    
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email"  # Adjust this to your database URI
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@host/database'
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email"
 db = SQLAlchemy(app)
 
 # Define SQLAlchemy model
@@ -27,12 +20,32 @@ class Question1(db.Model):
     option2_selected_count = db.Column(db.Integer, default=0)
     option3_selected_count = db.Column(db.Integer, default=0)
 
+# Middleware for logging requests
+@app.before_request
+def log_request_info():
+    print(f"{datetime.datetime.now()} - {request.method} {request.url}")
+
+# Middleware for adding a custom response header
+@app.after_request
+def add_custom_header(response):
+    response.headers['X-Custom-Header'] = 'Value'
+    return response
+
+# Error handling middleware
+@app.errorhandler(404)
+def page_not_found(e):
+    return jsonify(error=str(e)), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return jsonify(error=str(e)), 500
+
 # Routes
 
 # Create a question
 @app.route('/')
 def survey_form():
-    question = Question1.query.first()  # Assuming you want to fetch the first question for simplicity
+    question = Question1.query.first()
     return render_template('index.html', question=question)
 
 # Submit answer
