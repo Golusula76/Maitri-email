@@ -51,7 +51,8 @@ def submit_answer():
 
     db.session.commit()
 
-    return 'Answer submitted successfully'
+    return render_template('submit.html')
+
 
 # Run the Flask application
 if __name__ == '__main__':
