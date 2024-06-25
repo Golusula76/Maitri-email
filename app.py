@@ -1,26 +1,16 @@
-from flask import Flask, jsonify, request, abort, render_template
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
-from apscheduler.schedulers.background import BackgroundScheduler
-from flask_mail import Mail, Message
-import pymysql
-import datetime
-import json
-
-pymysql.install_as_MySQLdb()
-
+from sqlalchemy import func
+from flask import Flask, jsonify, request, render_template, abort
+from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email"
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
-app.config['MAIL_PORT'] = 587  
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'vinaykumar900417@gmail.com'  
-app.config['MAIL_PASSWORD'] = 'fgyc cjhy lfmb fddk'  
-app.config['MAIL_DEFAULT_SENDER'] = 'vinaykumar900417@gmail.com'  
-
+# MYSQL_HOST = 'localhost'
+# MYSQL_USER = 'root'
+# MYSQL_PASSWORD = 'root'
+# MYSQL_DB = 'new_email'
+    
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email"  # Adjust this to your database URI
 db = SQLAlchemy(app)
-mail = Mail(app)
-scheduler = BackgroundScheduler()
 
 # Define SQLAlchemy model
 class Question1(db.Model):
@@ -33,30 +23,12 @@ class Question1(db.Model):
     option2_selected_count = db.Column(db.Integer, default=0)
     option3_selected_count = db.Column(db.Integer, default=0)
 
-# Middleware for logging requests
-@app.before_request
-def log_request_info():
-    print(f"{datetime.datetime.now()} - {request.method} {request.url}")
+# Routes
 
-# Middleware for adding a custom response header
-@app.after_request
-def add_custom_header(response):
-    response.headers['X-Custom-Header'] = 'Value'
-    return response
-
-# Error handling middleware
-@app.errorhandler(404)
-def page_not_found(e):
-    return jsonify(error=str(e)), 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    return jsonify(error=str(e)), 500
-
-
+# Create a question
 @app.route('/')
 def survey_form():
-    question = Question1.query.first()
+    question = Question1.query.first()  # Assuming you want to fetch the first question for simplicity
     return render_template('index.html', question=question)
 
 # Submit answer
@@ -65,7 +37,7 @@ def submit_answer():
     data = request.form
     question_id = int(data['question_id'])
     selected_option = int(data['answer'])
-    
+
     question = Question1.query.get(question_id)
     if not question:
         abort(404, description="Question not found")
@@ -79,36 +51,8 @@ def submit_answer():
 
     db.session.commit()
 
-    return render_template('submit.html')
+    return 'Answer submitted successfully'
 
-def send_email():
-    with app.app_context():
-        questions = Question1.query.all()
-
-        
-        html_content = "<html><body>"
-        html_content += "<h2>Survey Results</h2>"
-        
-        for question in questions:
-            html_content += f"<h3>{question.text}</h3>"
-            html_content += "<ul>"
-            html_content += f"<li>{question.option1} - Selected {question.option1_selected_count} times</li>"
-            html_content += f"<li>{question.option2} - Selected {question.option2_selected_count} times</li>"
-            html_content += f"<li>{question.option3} - Selected {question.option3_selected_count} times</li>"
-            html_content += "</ul>"
-        
-        html_content += "</body></html>"
-
-        msg = Message("Survey Results", recipients=['pradeep@maitri.nyc'])  # Replace with recipient's email
-        msg.html = html_content
-        mail.send(msg)
-        print("Email sent!")
-
-
-
-scheduler.add_job(send_email, 'cron', hour=15, minute=5)
-scheduler.start()
-
-
+# Run the Flask application
 if __name__ == '__main__':
     app.run(debug=True)
