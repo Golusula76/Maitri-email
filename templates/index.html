@@ -367,12 +367,12 @@
                                                                     style="margin: 2; color: #C7A967; direction: ltr; font-family: 'Roboto Slab', Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 34px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 10px; margin-bottom: 20px; mso-line-height-alt: 34.8px;">
                                                                     Got a minute?</h1>
                                                                 <p class="heading1">Thanks for being a <span
-                                                                        class="content-heading">"Maitri Lab Grown
-                                                                        Diamonds"</span> newsletter subscriber! We'd
-                                                                    greatly appreciate it if you could spare just a few
-                                                                    minutes to share your thoughts on digitizing IGI
+                                                                        class="content-heading">"Maitri
+                                                                        Diamonds"</span> customer! We'd
+                                                                    greatly appreciate it if you could spare just a 
+                                                                    minute to share your thoughts on digitizing IGI
                                                                     certification for diamonds. Your feedback will help
-                                                                    us improve our content and services. Thank you for
+                                                                    us improve our services. Thank you for
                                                                     taking our quick survey.</p>
 
                                                                 <body>
@@ -381,7 +381,7 @@
                                                                         <div id="question-text">{{ question.text }}
                                                                         </div>
                                                                         <form id="quiz-form" action="/submit"
-                                                                            method="post">
+                                                                            method="post" onsubmit="return validateForm()">
                                                                             <input type="hidden" name="question_id"
                                                                                 value="{{ question.id }}">
                                                                             <div class="option">
@@ -591,5 +591,21 @@
     </tbody>
     </table><!-- End -->
 </body>
-
+<script>
+    function validateForm() {
+        const options = document.getElementsByName('answer');
+        let selected = false;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].checked) {
+                selected = true;
+                break;
+            }
+        }
+        if (!selected) {
+            alert("Please select an option before submitting.");
+            return false;
+        }
+        return true;
+    }
+</script>
 </html>

@@ -54,7 +54,7 @@ def submit_answer():
     data = request.form
     question_id = int(data['question_id'])
     selected_option = int(data['answer'])
-
+    
     question = Question1.query.get(question_id)
     if not question:
         abort(404, description="Question not found")
