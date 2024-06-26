@@ -3,12 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from flask import Flask, jsonify, request, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
-
 app = Flask(__name__)
-
-
+# MYSQL_HOST = 'localhost'
+# MYSQL_USER = 'root'
+# MYSQL_PASSWORD = 'root'
+# MYSQL_DB = 'new_email'
     
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_Email2"  # Adjust this to your database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email7"  # Adjust this to your database URI
 db = SQLAlchemy(app)
 
 # Define SQLAlchemy model
