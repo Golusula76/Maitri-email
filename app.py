@@ -1,15 +1,13 @@
-from flask import Flask, jsonify, request, abort
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 from flask import Flask, jsonify, request, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
+
 app = Flask(__name__)
-# MYSQL_HOST = 'localhost'
-# MYSQL_USER = 'root'
-# MYSQL_PASSWORD = 'root'
-# MYSQL_DB = 'new_email'
-    
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres.cvwogapzopwlimzonxxq:ajaxeNirQzM8JVJ7@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"  # Adjust this to your database URI
+
+# Adjust this to your PostgreSQL database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.cvwogapzopwlimzonxxq:ajaxeNirQzM8JVJ7@aws-0-ap-south-1.pooler.supabase.com:6543/postgres'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 # Define SQLAlchemy model
@@ -23,9 +21,13 @@ class Question1(db.Model):
     option2_selected_count = db.Column(db.Integer, default=0)
     option3_selected_count = db.Column(db.Integer, default=0)
 
+# Create the database and table if they don't exist
+with app.app_context():
+    db.create_all()
+
 # Routes
 
-# Create a question
+# Survey form
 @app.route('/')
 def survey_form():
     question = Question1.query.first()  # Assuming you want to fetch the first question for simplicity
@@ -53,4 +55,6 @@ def submit_answer():
 
     return render_template('submit.html')
 
-
+# Ensure the app is run when this script is executed directly
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
