@@ -5,9 +5,8 @@ from flask_mail import Mail, Message
 import datetime
 
 app = Flask(__name__)
-db = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.cvwogapzopwlimzonxxq:ajaxeNirQzM8JVJ7@aws-0-ap-south-1.pooler.supabase.com:6543/postgres'
 
+app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email2"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
@@ -17,7 +16,7 @@ app.config['MAIL_USERNAME'] = 'vinaykumar900417@gmail.com'
 app.config['MAIL_PASSWORD'] = 'fgyc cjhy lfmb fddk'  
 app.config['MAIL_DEFAULT_SENDER'] = 'vinaykumar900417@gmail.com'
 
-
+db = SQLAlchemy(app)
 mail = Mail(app)
 scheduler = BackgroundScheduler()
 
@@ -100,10 +99,10 @@ def send_email():
         print("Email sent!")
 
 # Schedule email sending using BackgroundScheduler
-scheduler.add_job(send_email, 'cron', hour=17, minute=26)  # Daily email at midnight
+scheduler.add_job(send_email, 'cron', hour=17, minute=50)  # Daily email at midnight
 scheduler.start()
 
-
-# Ensure the app is run when this script is executed directly
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
