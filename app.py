@@ -100,7 +100,7 @@ def send_email():
         print("Email sent!")
 
 # Schedule email sending using BackgroundScheduler
-scheduler.add_job(send_email, 'cron', hour=17, minute=19)  # Daily email at midnight
+scheduler.add_job(send_email, 'cron', hour=17, minute=26)  # Daily email at midnight
 scheduler.start()
 
 
