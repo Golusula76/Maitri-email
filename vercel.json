@@ -1,0 +1,14 @@
+{
+    "builds": [
+        {
+            "src": "MAITRI EMAIL - COPY/app.py",
+            "use": "@vercel/python"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "MAITRI EMAIL - COPY/app.py"
+        }
+    ]
+}
