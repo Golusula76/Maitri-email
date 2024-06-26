@@ -9,7 +9,7 @@ app = Flask(__name__)
 # MYSQL_PASSWORD = 'root'
 # MYSQL_DB = 'new_email'
     
-app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:root@localhost:3306/new_email2"  # Adjust this to your database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres.cvwogapzopwlimzonxxq:ajaxeNirQzM8JVJ7@aws-0-ap-south-1.pooler.supabase.com:6543/postgres"  # Adjust this to your database URI
 db = SQLAlchemy(app)
 
 # Define SQLAlchemy model
